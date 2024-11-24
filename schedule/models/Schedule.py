@@ -41,21 +41,15 @@ class Schedule:
                 timetable[lesson.day - 1][lesson.slot - 1].append(lesson)
         return timetable
 
-    def calculate_fitness(self, print_conflicts=False):
+    def calculate_conflicts(self, print_conflicts=False):
         number_of_conflicts = 0
-        cap_violations = 0
-        teacher_violations = 0
-        max_conflicts = 0
 
         timetable = self.get_timetable()
         for day in timetable:
             for slot in day:
                 size = len(slot)
-                max_conflicts += 3 * size * (size - 1) / 2 + size
                 for i in range(size):
                     lesson1 = slot[i]
-                    if self.__check_capacity_violation(lesson1):
-                        cap_violations += 1
                     if self.__check_wrong_teacher_violation(lesson1):
                         number_of_conflicts += 1
                     for j in range(i + 1, size):
@@ -76,24 +70,10 @@ class Schedule:
                         ):
                             number_of_conflicts += 1
 
-        conflicts_score = number_of_conflicts / max(max_conflicts, 1)
-        weak_violations_score = (
-            cap_violations + teacher_violations
-        ) / self.max_weak_violations
-        self.number_of_conflicts = number_of_conflicts
-
         if print_conflicts:
-            print(
-                f"conflicts: {number_of_conflicts} / {max_conflicts} ({conflicts_score}),  ",
-                f"capacity problems: {cap_violations},  ",
-            )
+            print(f"conflicts: {number_of_conflicts})")
 
-        if number_of_conflicts:
-            self.fitness = -(0.7 * conflicts_score + 0.3 * weak_violations_score)
-        else:
-            self.fitness = 1 - (weak_violations_score)
-
-        return self.fitness
+        return number_of_conflicts
 
     def print(self):
         t = self.get_timetable()
