@@ -1,8 +1,6 @@
 from math import floor
-import random
 
 from .Database import Database
-from .Class import Class
 from .ScheduleLesson import ScheduleLesson
 
 
@@ -41,9 +39,7 @@ class Schedule:
                 timetable[lesson.day - 1][lesson.slot - 1].append(lesson)
         return timetable
 
-    def calculate_conflicts(self, print_conflicts=False):
-        number_of_conflicts = 0
-
+    def has_conflicts(self):
         timetable = self.get_timetable()
         for day in timetable:
             for slot in day:
@@ -51,29 +47,26 @@ class Schedule:
                 for i in range(size):
                     lesson1 = slot[i]
                     if self.__check_wrong_teacher_violation(lesson1):
-                        number_of_conflicts += 1
+                        return True
                     for j in range(i + 1, size):
                         lesson2 = slot[j]
                         if (
                             lesson1.classroom_id == lesson2.classroom_id
                             and lesson1.classroom_id != -1
                         ):
-                            number_of_conflicts += 1
+                            return True
                         if (
                             lesson1.teacher_id == lesson2.teacher_id
                             and lesson1.teacher_id != -1
                         ):
-                            number_of_conflicts += 1
+                            return True
                         if (
                             self.db.get_group_by_class_id(lesson1.class_id).id
                             == self.db.get_group_by_class_id(lesson2.class_id).id
                         ):
-                            number_of_conflicts += 1
+                            return True
 
-        if print_conflicts:
-            print(f"conflicts: {number_of_conflicts})")
-
-        return number_of_conflicts
+        return False
 
     def print(self):
         t = self.get_timetable()

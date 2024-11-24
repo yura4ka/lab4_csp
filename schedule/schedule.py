@@ -27,7 +27,7 @@ def schedule():
     def is_correct(data):
         s = Schedule(db)
         s.setData(data)
-        return s.calculate_conflicts() == 0
+        return not s.has_conflicts()
 
     csp = CSP(variables)
     csp.add_constraint(variables, is_correct)
@@ -37,5 +37,4 @@ def schedule():
     schedule.setData(result)
 
     schedule.print()
-    print("\n")
-    schedule.calculate_conflicts(print_conflicts=True)
+    print("\n", schedule.has_conflicts())
