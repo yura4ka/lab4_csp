@@ -48,6 +48,8 @@ class Schedule:
                     lesson1 = slot[i]
                     if self.__check_wrong_teacher_violation(lesson1):
                         return True
+                    if self.__check_capacity_violation(lesson1):
+                        return True
                     for j in range(i + 1, size):
                         lesson2 = slot[j]
                         if (
